@@ -1,0 +1,9 @@
+*.o
+.DS_Store
+.vscode
+problem2a
+problem2b
+problem2c
+problem2d
+problem2e
+problem2f
