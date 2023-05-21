@@ -478,8 +478,42 @@ struct solution *newSolution(struct problem *problem){
 */
 struct solution *solveProblemA(struct problem *p){
     struct solution *s = newSolution(p);
-    /* Fill in: Part A */
     
+    for (int i = 0; i < p->termCount; i++) {
+            // printf("i : %d\n", i);
+                int score = DEFAULTSCORE;
+                int maxscore = DEFAULTSCORE;
+                int maxcolour = NO_COLOUR;  
+            // printf(": %c :", p->colourTables->term[i]);
+            // printf("\n");
+        for (int j = 0; j < p->termColourTableCount; j++) {
+            struct termColourTable *t = p->colourTables + j;
+            if (strcmp(p->terms[i],t->term) != 0) {
+                // printf("j : %d\n", j);
+                continue;
+            }
+            for (int k = 0; k < t->colourCount; k++) {
+                // printf("k : %d\n", k);
+                for (int m = 0; m < 4; m++) {
+                    // printf("colour(m) : %d\n", m);
+                    if (t->colours[k] == m) {
+                        score = t->scores[k];
+                        // printf("score: %d\n", score);
+                        // printf("%s ", t->term);                     
+                    }
+                    if (score > maxscore) {
+                        maxscore = score;
+                        maxcolour = m;
+                        // printf("maxc = %d \n\n", maxcolour);
+                    }
+                }
+            }
+        }
+        s->termColours[i] = maxcolour;
+        // printf("maxc = %d \n", maxcolour);
+        // printf("%d \n", s->termColours[i]);
+    }
+    printf("\n");
 
     return s;
 }
