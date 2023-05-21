@@ -6,7 +6,7 @@
         Problem 2-related data structures and 
         functions.
     
-    Code implemented by <YOU>
+    Code implemented by Kel Leong
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -84,7 +84,7 @@ struct problem *readProblemA(FILE *textFile, FILE *tableFile){
 
     if(success == -1){
         /* Encountered an error. */
-        perror("Encountered error reading table file");
+        // perror("Encountered error reading table file");
         exit(EXIT_FAILURE);
     } else {
         /* Assume file contains at least one character. */
@@ -105,8 +105,15 @@ struct problem *readProblemA(FILE *textFile, FILE *tableFile){
         int score;
         int colour;
         int nextProgress;
+
+        int j = 0;
+        while(*(tableText + progress + j) != '\0' && *(tableText + progress + j) != ','){
+            j++;
+        }
+        token = (char *) malloc(sizeof(char) * j);
+        assert(token);
         /* Make sure a token, colour and score are grabbed for each line. For simplicity, freshly allocate the token. */
-        assert(sscanf(tableText + progress, "%m[^,],%d,%d %n", &token, &colour, &score, &nextProgress) == 3);
+        assert(sscanf(tableText + progress, "%[^,],%d,%d %n", token, &colour, &score, &nextProgress) == 3);
         assert(nextProgress > 0);
         progress += nextProgress;
 
@@ -230,7 +237,17 @@ struct problem *readProblemA(FILE *textFile, FILE *tableFile){
         if(! nextTerm){
             /* No match found, try finding word. This may consume punctuation, 
                 this doesn't really matter. */
-            assert(sscanf(text + start, " %ms %n", &nextTerm, &nextProgress) == 1);
+            int j = 0;
+            while(isspace(*(text + start + j))){
+                j++;
+            }
+            while(*(text + start + j) != '\0' && ! isspace(*(text + start + j))){
+                j++;
+            }
+            // Wastes a little space, but shouldn't be too much.
+            nextTerm = (char *) malloc(sizeof(char) * j);
+            assert(nextTerm);
+            assert(sscanf(text + start, " %s %n", nextTerm, &nextProgress) == 1);
             progress += nextProgress;
         } else {
             progress += maxLengthGreedyMatch;
@@ -462,6 +479,7 @@ struct solution *newSolution(struct problem *problem){
 struct solution *solveProblemA(struct problem *p){
     struct solution *s = newSolution(p);
     /* Fill in: Part A */
+    
 
     return s;
 }
