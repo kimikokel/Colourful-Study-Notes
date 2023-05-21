@@ -1,0 +1,15 @@
+backtracking,2,5
+backtracking,1,1
+backtracking,0,0
+graph,3,4
+graph,2,3
+graph,1,2
+graph,0,0
+vertices,3,5
+vertices,2,4
+spanning trees,2,5
+spanning trees,1,8
+paths,3,5
+paths,2,4
+search space,2,5
+search space,1,1

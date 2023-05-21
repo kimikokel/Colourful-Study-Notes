@@ -1,0 +1,1 @@
+The notion of dominance also gives rise to the Little Oh notation. We say that f(n) = o(g(n)) iff g(n) dominates f(n). Among other things, the Little Oh proves useful for asking questions. Asking for an o(n2) algorithm means you want one that is better than quadratic in the worst case—and means you would be willing to settle for O(n^1.999log2n).

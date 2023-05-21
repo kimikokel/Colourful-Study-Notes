@@ -1,0 +1,1 @@
+brute force is a straightforward approach to solving a problem usually directly based on the problem statement and definitions of the concepts involved

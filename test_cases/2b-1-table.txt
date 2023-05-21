@@ -1,0 +1,16 @@
+brute,3,11
+brute,2,0
+brute,1,0
+brute,0,0
+force,3,5
+force,2,0
+force,1,0
+force,0,0
+problem,3,0
+problem,2,15
+problem,1,8
+problem,0,0
+statement,3,0
+statement,2,0
+statement,1,5
+statement,0,0

@@ -1,0 +1,8 @@
+dominance,3,5
+dominance,2,4
+dominance,1,10
+dominance,0,0
+big oh,3,5
+case,3,5
+quadratic,3,5
+little oh,2,4

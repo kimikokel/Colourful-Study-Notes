@@ -1,0 +1,4 @@
+dominance,3,1
+oh,3,1
+case,3,1
+quadratic,3,1

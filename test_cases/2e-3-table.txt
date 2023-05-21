@@ -1,0 +1,16 @@
+complexity,0,0
+complexity,1,4
+complexity,2,5
+complexity,3,5
+too,0,0
+too,1,5
+too,2,5
+can,0,0
+can,1,6
+can,3,18
+be,0,5
+be,2,4
+be,3,10
+calculated,2,5
+without,2,7
+much,1,9
