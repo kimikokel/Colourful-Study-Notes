@@ -36,6 +36,9 @@
 /* Marker for non-allowed colours. */
 #define NONALLOWED (INT_MIN / 2)
 
+/* Total number of colours is 4 */
+#define TOTAL_COLOURS 4
+
 struct problem;
 struct solution;
 
@@ -480,48 +483,93 @@ struct solution *solveProblemA(struct problem *p){
     struct solution *s = newSolution(p);
     
     for (int i = 0; i < p->termCount; i++) {
-            // printf("i : %d\n", i);
-                int score = DEFAULTSCORE;
-                int maxscore = DEFAULTSCORE;
-                int maxcolour = NO_COLOUR;  
-            // printf(": %c :", p->colourTables->term[i]);
-            // printf("\n");
+        int score = DEFAULTSCORE;
+        int maxscore = DEFAULTSCORE;
+        int maxcolour = NO_COLOUR;  
+
         for (int j = 0; j < p->termColourTableCount; j++) {
             struct termColourTable *t = p->colourTables + j;
+
             if (strcmp(p->terms[i],t->term) != 0) {
-                // printf("j : %d\n", j);
                 continue;
             }
+
             for (int k = 0; k < t->colourCount; k++) {
-                // printf("k : %d\n", k);
-                for (int m = 0; m < 4; m++) {
-                    // printf("colour(m) : %d\n", m);
+                for (int m = 0; m < TOTAL_COLOURS; m++) {
                     if (t->colours[k] == m) {
-                        score = t->scores[k];
-                        // printf("score: %d\n", score);
-                        // printf("%s ", t->term);                     
+                        score = t->scores[k];                    
                     }
+
                     if (score > maxscore) {
                         maxscore = score;
                         maxcolour = m;
-                        // printf("maxc = %d \n\n", maxcolour);
                     }
                 }
             }
         }
         s->termColours[i] = maxcolour;
-        // printf("maxc = %d \n", maxcolour);
-        // printf("%d \n", s->termColours[i]);
     }
     printf("\n");
 
     return s;
 }
 
+int getWC(struct problem *p, char* token, int colour) {
+    for (int i = 0; i < p->termColourTableCount; i++) {
+        struct termColourTable *t = p->colourTables + i;
+
+        if (strcmp(token,t->term) != 0) {
+            continue;
+        }
+        
+        for (int j = 0; j < t->colourCount; j++) {
+            if (t->colours[j] == colour) {
+                return t->scores[j];
+            }
+        }
+    }
+    return DEFAULTSCORE;
+}
+
+int getCT(struct problem *p, int prevColour, int colour) {
+    struct colourTransitionTable *t = p->colourTransitionTable;
+    for (int i = 0; i < t->transitionCount; i++) {
+        if (t->prevColours[i] == prevColour) {
+            if (t->colours[i] == colour) {
+                return t->scores[i];
+            }
+        }
+    }
+    return DEFAULTSCORE;
+}
+
 struct solution *solveProblemB(struct problem *p){
     struct solution *s = newSolution(p);
-    /* Fill in: Part B */
-    
+
+    int prevColour = DEFAULTCOLOUR;
+
+    for (int i = 0; i < p->termCount; i++) {
+        int maxscore = DEFAULTSCORE;
+        int maxcolour = NO_COLOUR;  
+        char *token = p->terms[i];
+
+        for (int j = 0; j < TOTAL_COLOURS; j++) {
+            int getWCscore = getWC(p, token, j);
+            int getCTscore = getCT(p, prevColour, j);
+
+            if (getWCscore == DEFAULTSCORE) {
+                continue;
+            }
+
+            int score = getWCscore + getCTscore;
+            if (score > maxscore) {
+                maxscore = score;
+                maxcolour = j;
+            }
+        }
+        s->termColours[i] = maxcolour;
+        prevColour = maxcolour;
+    }
     return s;
 }
 
