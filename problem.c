@@ -490,40 +490,38 @@ struct solution *solveProblemA(struct problem *p){
         for (int j = 0; j < p->termColourTableCount; j++) {
             struct termColourTable *t = p->colourTables + j;
 
-            if (strcmp(p->terms[i],t->term) != 0) {
-                continue;
+            if (strcmp(p->terms[i],t->term) != 0) {        //if the term doesn't match in two tables,
+                continue;                                  //continues
             }
 
             for (int k = 0; k < t->colourCount; k++) {
-                for (int m = 0; m < TOTAL_COLOURS; m++) {
-                    if (t->colours[k] == m) {
+                for (int c = 0; c < TOTAL_COLOURS; c++) {
+                    if (t->colours[k] == c) {             //match the colours with the score
                         score = t->scores[k];                    
                     }
 
-                    if (score > maxscore) {
-                        maxscore = score;
-                        maxcolour = m;
+                    if (score > maxscore) {               //if score is bigger than the maxscore,
+                        maxscore = score;                 //replace maxscore with score
+                        maxcolour = c;                    //maxcolour with colour now
                     }
                 }
             }
         }
-        s->termColours[i] = maxcolour;
+        s->termColours[i] = maxcolour;                    //input maxcolour into solutions
     }
-    printf("\n");
-
     return s;
 }
 
-int getWC(struct problem *p, char* token, int colour) {
+int getWC(struct problem *p, char* token, int colour) {   //get colours from the word colour table
     for (int i = 0; i < p->termColourTableCount; i++) {
         struct termColourTable *t = p->colourTables + i;
 
-        if (strcmp(token,t->term) != 0) {
-            continue;
+        if (strcmp(token,t->term) != 0) {                 //if the term doesn't match in two tables,
+            continue;                                     //continue
         }
 
         for (int j = 0; j < t->colourCount; j++) {
-            if (t->colours[j] == colour) {
+            if (t->colours[j] == colour) {            
                 return t->scores[j];
             }
         }
@@ -531,12 +529,12 @@ int getWC(struct problem *p, char* token, int colour) {
     return DEFAULTSCORE;
 }
 
-int getCT(struct problem *p, int prevColour, int colour) {
+int getCT(struct problem *p, int prevColour, int colour) { //get colours from the colour transition table
     struct colourTransitionTable *t = p->colourTransitionTable;
-    for (int i = 0; i < t->transitionCount; i++) {
-        if (t->prevColours[i] == prevColour) {
-            if (t->colours[i] == colour) {
-                return t->scores[i];
+    for (int i = 0; i < t->transitionCount; i++) {          
+        if (t->prevColours[i] == prevColour) {             
+            if (t->colours[i] == colour) {                 //if colours in two tables match,
+                return t->scores[i];                       //return the score in the current row
             }
         }
     }
@@ -548,7 +546,7 @@ struct solution *solveProblemB(struct problem *p){
 
     int prevColour = DEFAULTCOLOUR;
 
-    for (int i = 0; i < p->termCount; i++) {
+    for (int i = 0; i < p->termCount; i++) {              
         int maxscore = DEFAULTSCORE;
         int maxcolour = NO_COLOUR;  
         char *token = p->terms[i];
@@ -557,17 +555,17 @@ struct solution *solveProblemB(struct problem *p){
             int getWCscore = getWC(p, token, j);
             int getCTscore = getCT(p, prevColour, j);
 
-            if (getWCscore == DEFAULTSCORE) {
-                continue;
+            if (getWCscore == DEFAULTSCORE) {              //if score found in WC table is -1
+                continue;                                  //then continue
             }
 
-            int score = getWCscore + getCTscore;
-            if (score > maxscore) {
-                maxscore = score;
-                maxcolour = j;
+            int score = getWCscore + getCTscore;   
+            if (score > maxscore) {                        //if score is bigger than maxscore,
+                maxscore = score;                          //replace maxscore with score
+                maxcolour = j;                             //replace maxcolour with current colour
             }
         }
-        s->termColours[i] = maxcolour;
+        s->termColours[i] = maxcolour;                     //place maxcolour into solution
         prevColour = maxcolour;
     }
     return s;
@@ -575,75 +573,104 @@ struct solution *solveProblemB(struct problem *p){
 
 int **getDP(struct problem *p){
     int **dp;
-    dp = (int **)malloc(sizeof(int *)*TOTAL_COLOURS);
+    dp = (int **)malloc(sizeof(int *)*TOTAL_COLOURS);      //allocate memory for a 2D array
 
     for (int c = 0; c < TOTAL_COLOURS; c++) {
-        dp[c] = (int*)malloc(sizeof(int)*p->termCount);
+        dp[c] = (int*)malloc(sizeof(int)*p->termCount);    //allocate memory for each colour
         for (int i = 0; i < p->termCount; i++) {
-            dp[c][i] = DEFAULTSCORE;
-            // printf("%d \n", dp[c][i]);
+            dp[c][i] = DEFAULTSCORE;                       //intialise all blocks into -1
         }
     }
     for (int c = 0; c < TOTAL_COLOURS; c++) {
-        int getWCscore = getWC(p, p->terms[0], c);
-        dp[c][0] = getWCscore;
-        // printf("%d \n", dp[c][0]);
+        int getWCscore = getWC(p, p->terms[0], c);         //find score in WC table
+        dp[c][0] = getWCscore;                             //replace scores for all first terms
     }
 
     for (int i = 1; i < p->termCount; i++) {
-        char *token = p->terms[i];
+        char *token = p->terms[i];                         
         
         for (int c = 0; c < TOTAL_COLOURS; c++) {
             int getWCscore = getWC(p, token, c);
             int maxscore = DEFAULTSCORE;
 
-            if (getWCscore == DEFAULTSCORE) {
+            if (getWCscore == DEFAULTSCORE) {              //if score is -1 then continue
                 continue;
             }
-            // printf("\ni:%d c:%d term: %s score:%d \n", i,c,token,getWCscore);
 
             for (int j = 0; j < TOTAL_COLOURS; j++) {
-                int prevscore = dp[j][i-1];
+                int prevscore = dp[j][i - 1];            
                 
-                if (prevscore == DEFAULTSCORE) {
+                if (prevscore == DEFAULTSCORE) {           //if previous score is -1 then continue
                     continue;
                 }
-                int getCTscore = getCT(p, j, c);
+                int getCTscore = getCT(p, j, c);           //get score from CT table
                 int score = getWCscore + getCTscore + prevscore;
 
-                if (maxscore < score) {
+                if (maxscore < score) {                    //replace maxscore if score is larger
                     maxscore = score;
-                    // printf("maxscore: %d \n", maxscore);
                 }
             }
 
-            dp[c][i] = maxscore;
-            // printf("ans: %d colour: %d tmp: %d \n", maxscore, c, tmp);
-            // printf("i: %d c: %d dp[c][i]: %d\n",i,c,dp[c][i]);
+            dp[c][i] = maxscore;                           //place maxscore into array
         }
     }
     return dp;
 }
 
+void freeDP(int** dp) {
+    for (int c = 0; c < TOTAL_COLOURS; c++)                
+        free(dp[c]);                                       //free all block of colours
+    free(dp);                                              //and the array itselves
+}
+
 struct solution *solveProblemE(struct problem *p){
     struct solution *s = newSolution(p);
-    int **dp = getDP(p);
+    int **dp = getDP(p);                                 
     
-    int i = p->termCount - 1;
-    int max = DEFAULTSCORE;
+    int i = p->termCount - 1;                              //the last term
+    int max = DEFAULTSCORE;                             
     for (int c = 0; c < TOTAL_COLOURS; c++){
-        if (max < dp[c][i]) {
+        if (max < dp[c][i]) {                              //replace max with the largest score
             max = dp[c][i];
-            s->score = max;
+            s->score = max;                                //place max into solution
         }
     }
+    freeDP(dp);
     return s;
 }
 
 struct solution *solveProblemF(struct problem *p){
     struct solution *s = newSolution(p);
-    /* Fill in: Part F */
+    
+    int **dp = getDP(p);
+    int *tb = (int*)malloc(sizeof(int)*p->termCount);     //allocate memory for traceback array
+    int maxscore = DEFAULTSCORE;
+    int maxcolour = DEFAULTCOLOUR;
+    
+    for (int c = 0; c < TOTAL_COLOURS; c++) {
+        if (maxscore < dp[c][p->termCount - 1]) {         //replace maxscore if
+            maxscore = dp[c][p->termCount - 1];           //maxscore < score of the last term
+            maxcolour = c;                                //replace maxcolour with current colour
+        }
+    }
 
+    tb[p->termCount - 1] = maxcolour;                     //replace colour of last term with maxcolour
+    for (int i = p->termCount - 1; i > 0; i--) {
+        for (int c = 0; c < TOTAL_COLOURS; c++) {
+            if (dp[c][i - 1] == DEFAULTSCORE) {           //if score of previous term is -1 the continue
+                continue;
+            }
+            int getWCscore = getWC(p, p->terms[i], tb[i]);
+            int getCTscore = getCT(p, c, tb[i]);
+
+            if (getWCscore + getCTscore + dp[c][i - 1] == dp[tb[i]][i]) {
+                tb[i - 1] = c;
+                break;
+            }
+        }
+    }
+    s->termColours = tb;
+    freeDP(dp);
     return s;
 }
 

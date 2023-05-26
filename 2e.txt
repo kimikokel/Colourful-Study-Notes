@@ -1,0 +1,16 @@
+gcc -Wall -o problem2e problem2e.o problem.o -g
+2e1:
+115
+115
+2e2:
+153
+153
+2e3:
+157
+157
+2e4:
+178
+178
+2e5:
+815
+815
