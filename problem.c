@@ -573,8 +573,7 @@ struct solution *solveProblemB(struct problem *p){
     return s;
 }
 
-struct solution *solveProblemE(struct problem *p){
-    struct solution *s = newSolution(p);
+int **getDP(struct problem *p){
     int **dp;
     dp = (int **)malloc(sizeof(int *)*TOTAL_COLOURS);
 
@@ -622,15 +621,21 @@ struct solution *solveProblemE(struct problem *p){
             // printf("ans: %d colour: %d tmp: %d \n", maxscore, c, tmp);
             // printf("i: %d c: %d dp[c][i]: %d\n",i,c,dp[c][i]);
         }
-    if (i == p->termCount-1) {
-        int max = DEFAULTSCORE;
-        for (int c = 0; c < TOTAL_COLOURS; c++){
-            if (max < dp[c][i]) {
-                max = dp[c][i];
-                s->score = max;
-            }
-        }
     }
+    return dp;
+}
+
+struct solution *solveProblemE(struct problem *p){
+    struct solution *s = newSolution(p);
+    int **dp = getDP(p);
+    
+    int i = p->termCount - 1;
+    int max = DEFAULTSCORE;
+    for (int c = 0; c < TOTAL_COLOURS; c++){
+        if (max < dp[c][i]) {
+            max = dp[c][i];
+            s->score = max;
+        }
     }
     return s;
 }
