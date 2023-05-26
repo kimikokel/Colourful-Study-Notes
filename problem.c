@@ -521,7 +521,7 @@ int getWC(struct problem *p, char* token, int colour) {
         if (strcmp(token,t->term) != 0) {
             continue;
         }
-        
+
         for (int j = 0; j < t->colourCount; j++) {
             if (t->colours[j] == colour) {
                 return t->scores[j];
@@ -575,8 +575,63 @@ struct solution *solveProblemB(struct problem *p){
 
 struct solution *solveProblemE(struct problem *p){
     struct solution *s = newSolution(p);
-    /* Fill in: Part E */
+    int **dp;
+    dp = (int **)malloc(sizeof(int *)*TOTAL_COLOURS);
 
+    for (int c = 0; c < TOTAL_COLOURS; c++) {
+        dp[c] = (int*)malloc(sizeof(int)*p->termCount);
+        for (int i = 0; i < p->termCount; i++) {
+            dp[c][i] = DEFAULTSCORE;
+            // printf("%d \n", dp[c][i]);
+        }
+    }
+    for (int c = 0; c < TOTAL_COLOURS; c++) {
+        int getWCscore = getWC(p, p->terms[0], c);
+        dp[c][0] = getWCscore;
+        // printf("%d \n", dp[c][0]);
+    }
+
+    for (int i = 1; i < p->termCount; i++) {
+        char *token = p->terms[i];
+        
+        for (int c = 0; c < TOTAL_COLOURS; c++) {
+            int getWCscore = getWC(p, token, c);
+            int maxscore = DEFAULTSCORE;
+
+            if (getWCscore == DEFAULTSCORE) {
+                continue;
+            }
+            // printf("\ni:%d c:%d term: %s score:%d \n", i,c,token,getWCscore);
+
+            for (int j = 0; j < TOTAL_COLOURS; j++) {
+                int prevscore = dp[j][i-1];
+                
+                if (prevscore == DEFAULTSCORE) {
+                    continue;
+                }
+                int getCTscore = getCT(p, j, c);
+                int score = getWCscore + getCTscore + prevscore;
+
+                if (maxscore < score) {
+                    maxscore = score;
+                    // printf("maxscore: %d \n", maxscore);
+                }
+            }
+
+            dp[c][i] = maxscore;
+            // printf("ans: %d colour: %d tmp: %d \n", maxscore, c, tmp);
+            // printf("i: %d c: %d dp[c][i]: %d\n",i,c,dp[c][i]);
+        }
+    if (i == p->termCount-1) {
+        int max = DEFAULTSCORE;
+        for (int c = 0; c < TOTAL_COLOURS; c++){
+            if (max < dp[c][i]) {
+                max = dp[c][i];
+                s->score = max;
+            }
+        }
+    }
+    }
     return s;
 }
 

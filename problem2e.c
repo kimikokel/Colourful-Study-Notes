@@ -28,7 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <error.h>
+// #include <error.h>
 #include "problem.h"
 
 /* If no -c is provided, the table file is the first argument. */
